@@ -1,0 +1,68 @@
+:root {
+  --font-display: var(--font-display-fallback, "Inter", system-ui, sans-serif);
+  --font-sans: var(--font-sans-fallback, "Inter", system-ui, sans-serif);
+
+  --text-hero: clamp(2rem, 5vw + 1rem, 5rem);
+  --text-h1: clamp(1.75rem, 3vw + 1rem, 3.5rem);
+  --text-h2: clamp(1.5rem, 2vw + 0.75rem, 2.5rem);
+  --text-h3: clamp(1.25rem, 1.5vw + 0.5rem, 1.75rem);
+  --text-body: clamp(0.9375rem, 0.5vw + 0.875rem, 1.125rem);
+  --text-small: clamp(0.8125rem, 0.25vw + 0.75rem, 0.9375rem);
+
+  --radius: 0.75rem;
+  --section-padding: clamp(3rem, 8vw, 8rem);
+}
+
+.text-hero {
+  font-size: var(--text-hero);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.text-h1 {
+  font-size: var(--text-h1);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-h2 {
+  font-size: var(--text-h2);
+  line-height: 1.2;
+}
+
+.text-body {
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
+.glass-card {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--accent)) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-padding {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

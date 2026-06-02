@@ -1,0 +1,103 @@
+@keyframes ib-float {
+  0%, 100% { transform: translateY(0) rotate(var(--ib-rotate, 0deg)); }
+  50% { transform: translateY(-12px) rotate(var(--ib-rotate, 0deg)); }
+}
+
+@keyframes ib-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes ib-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes ib-wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes ib-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ib-animate-float {
+  animation: ib-float 5s ease-in-out infinite;
+}
+
+.ib-animate-pulse {
+  animation: ib-pulse 2s ease-in-out infinite;
+}
+
+.ib-animate-wiggle {
+  animation: ib-wiggle 3s ease-in-out infinite;
+}
+
+/* Visible on first paint; only below-fold blocks animate in */
+.ib-reveal,
+.reveal,
+.ib-stagger-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ib-reveal.will-animate,
+.reveal.will-animate {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ib-reveal.will-animate.is-visible,
+.reveal.will-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ib-stagger-parent:not(.is-visible) .ib-stagger-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ib-stagger-parent.will-animate:not(.is-visible) .ib-stagger-child {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ib-stagger-parent.is-visible .ib-stagger-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(1) { transition-delay: 0.02s; }
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(2) { transition-delay: 0.04s; }
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(3) { transition-delay: 0.06s; }
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(4) { transition-delay: 0.08s; }
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(5) { transition-delay: 0.1s; }
+.ib-stagger-parent.is-visible .ib-stagger-child:nth-child(6) { transition-delay: 0.12s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ib-animate-float,
+  .ib-animate-pulse,
+  .ib-animate-wiggle,
+  .ib-marquee-track {
+    animation: none !important;
+  }
+  .ib-reveal,
+  .ib-stagger-child {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

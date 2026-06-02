@@ -1,0 +1,41 @@
+/* Inlined for instant first paint — full styles load from main.css */
+body {
+  margin: 0;
+  background: #f9f4ee;
+  color: #0a0a0a;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.ib-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #f9f4ee;
+  border-bottom: 3px solid #0a0a0a;
+}
+
+.ib-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+.ib-logo {
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ib-marquee {
+  background: #0a0a0a;
+  color: #dfff00;
+  overflow: hidden;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}

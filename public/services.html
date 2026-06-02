@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="ib-site">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services — Intasia Branding</title>
+  <style>body{margin:0;background:#f9f4ee;color:#0a0a0a;font-family:system-ui,sans-serif}.ib-header{position:sticky;top:0;z-index:50;background:#f9f4ee;border-bottom:3px solid #0a0a0a}.ib-header-inner{display:flex;align-items:center;justify-content:space-between;max-width:72rem;margin:0 auto;padding:.75rem 1rem}.ib-logo{font-weight:800;text-decoration:none;color:inherit}.ib-marquee{background:#0a0a0a;color:#dfff00;padding:.35rem 0;font-size:.8rem;font-weight:700}</style>
+  <link rel="preload" href="/css/main.css" as="style" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="modulepreload" href="/js/layout.js" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&family=Space+Grotesk:wght@500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&family=Space+Grotesk:wght@500;600;700&display=swap" /></noscript>
+</head>
+<body class="ib-site">
+  <div class="ib-marquee" data-marquee="✦ Shoot. Edit. Deliver. Repeat. — Intasia — "></div>
+  <div id="site-header"><header class="ib-header"><div class="ib-header-inner"><a href="/" class="ib-logo">Intasia <span>Branding</span></a></div></header></div>
+  <main class="min-h-screen">
+    <section class="ib-section ib-page-hero ib-page-hero--grid-bg">
+      <div class="ib-container text-center ib-reveal">
+        <p class="ib-hand text-lg">What we offer</p>
+        <h1 class="ib-display ib-page-title mt-4">Brand.<br/>Design.<br/><span class="ib-outline-word">Deliver.</span></h1>
+        <p class="mt-6 text-lg text-[var(--ib-gray)] max-w-2xl mx-auto">Explore our full catalog of digital growth services.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
+          <span class="ib-badge">Web</span>
+          <span class="ib-badge ib-badge--purple">Apps</span>
+          <span class="ib-badge">Marketing</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="ib-section ib-section--cream ib-py">
+      <div class="ib-container">
+        <div id="services-page-grid" class="ib-services-grid ib-stagger-parent" data-services-grid></div>
+      </div>
+    </section>
+
+    <section class="ib-section ib-section--black ib-py">
+      <div class="ib-container">
+        <h2 class="ib-display text-center text-3xl text-white ib-reveal">Pricing plans</h2>
+        <p class="text-center mt-4 text-white/70 ib-reveal">Let us take your business <span class="ib-outline-word">ONLINE</span></p>
+        <div id="pricing-plans" class="ib-pricing-grid mt-12 ib-stagger-parent"></div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/layout.js"></script>
+  <script type="module" src="/js/motion.js"></script>
+  <script type="module" src="/js/services-page.js"></script>
+</body>
+</html>

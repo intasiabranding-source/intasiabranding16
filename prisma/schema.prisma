@@ -1,0 +1,571 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum OtpPurpose {
+  LOGIN
+  RECOVERY
+}
+
+enum LeadSource {
+  CONTACT_FORM
+  REFERRAL
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  CLOSED
+  PROPOSAL_SENT
+  WON
+  LOST
+}
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AnimationPreset {
+  FADE_UP
+  FADE_IN
+  SLIDE_LEFT
+  SLIDE_RIGHT
+  ZOOM_IN
+  BOUNCE
+  STAGGER
+  FLOAT
+  NONE
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  BOUNCED
+}
+
+// ============================================================================
+// AUTHENTICATION & ADMIN
+// ============================================================================
+
+model Admin {
+  id            String   @id @default(cuid())
+  primaryEmail  String   @unique
+  backupEmail   String?  @unique
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  auditLogs     AuditLog[]
+  loginHistory  LoginHistory[]
+
+  @@index([primaryEmail])
+  @@index([backupEmail])
+  @@index([isActive])
+}
+
+model OtpChallenge {
+  id        String      @id @default(cuid())
+  email     String
+  codeHash  String
+  purpose   OtpPurpose  @default(LOGIN)
+  expiresAt DateTime
+  usedAt    DateTime?
+  ipAddress String?
+  attempts  Int         @default(0)
+  createdAt DateTime    @default(now())
+
+  @@index([email, purpose, usedAt])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String?
+  admin     Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model LoginHistory {
+  id        String   @id @default(cuid())
+  adminId   String?
+  admin     Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  email     String
+  success   Boolean
+  ipAddress String?
+  userAgent String?
+  deviceInfo String?
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([email])
+  @@index([success])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// CONTACT & LEADS
+// ============================================================================
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  service   String?
+  message   String
+  notes     String?
+  source    LeadSource @default(CONTACT_FORM)
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([email])
+  @@index([source])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// EMAIL & SMTP
+// ============================================================================
+
+model SmtpProfile {
+  id              String   @id @default(cuid())
+  name            String?
+  host            String
+  port            Int      @default(587)
+  encryption      String   @default("TLS")
+  username        String
+  password        String?   @default("")
+  passwordEnc     String?
+  fromEmail       String
+  fromName        String   @default("")
+  tlsInsecure     Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([username])
+}
+
+model EmailLog {
+  id        String      @id @default(cuid())
+  to        String
+  subject   String
+  status    EmailStatus @default(PENDING)
+  provider  String?
+  error     String?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+  sentAt    DateTime?
+
+  @@index([to])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// CMS - SITE SETTINGS & THEME
+// ============================================================================
+
+model SiteSettings {
+  id                   String  @id @default("default")
+  brandName            String  @default("Digital Growth Ecosystem")
+  tagline              String?
+  leadNotifyEmail      String?
+  contactEmail         String?
+  contactPhone         String?
+  address              String?
+  whatsapp             String?
+  instagram            String?
+  mapEmbedUrl          String?
+  gaMeasurementId      String?
+  autoReplySubject     String?
+  autoReplyBody        String?
+  otpLoginSubject      String?
+  otpLoginBody         String?
+  otpRecoverySubject   String?
+  otpRecoveryBody      String?
+  useSmtpForAuth       Boolean  @default(true)
+  updatedAt            DateTime @updatedAt
+
+  @@unique([id])
+}
+
+model SiteTheme {
+  id              String  @id @default("default")
+  primaryColor    String  @default("280 70% 60%")
+  accentColor     String  @default("280 70% 60%")
+  gradientFrom    String  @default("280 70% 60%")
+  gradientTo      String  @default("280 70% 60%")
+  darkModeDefault Boolean @default(true)
+  updatedAt       DateTime @updatedAt
+
+  @@unique([id])
+}
+
+model SeoSettings {
+  id              String  @id @default("default")
+  path            String? @unique
+  title           String?
+  description     String?
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  updatedAt       DateTime @updatedAt
+
+  @@unique([id])
+}
+
+model AeoGeoBlock {
+  id        String   @id @default(cuid())
+  country   String?
+  region    String?
+  type      String?
+  order     Int      @default(0)
+  blocked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([country])
+  @@index([order])
+}
+
+// ============================================================================
+// CMS - CONTENT PAGES
+// ============================================================================
+
+model Page {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  title     String
+  description String?
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sections  PageSection[]
+
+  @@index([slug])
+  @@index([published])
+}
+
+model PageSection {
+  id              String          @id @default(cuid())
+  pageId          String
+  page            Page            @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  type            String
+  published       Boolean         @default(false)
+  order           Int             @default(0)
+  animationPreset AnimationPreset @default(FADE_UP)
+  content         Json?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([pageId])
+  @@index([published])
+}
+
+// ============================================================================
+// CMS - SERVICES
+// ============================================================================
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String?
+  description String?
+  slug        String?  @unique
+  shortDesc   String?
+  category    String?
+  geoSummary  String?
+  features    Json?    @default("[]")
+  pricing     String?
+  priceNote   String?
+  ctaLabel    String?
+  ctaLink     String?
+  imageUrl    String?
+  gallery     Json?    @default("[]")
+  published   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+  @@index([slug])
+}
+
+// ============================================================================
+// CMS - BLOG
+// ============================================================================
+
+model BlogPost {
+  id                String         @id @default(cuid())
+  title             String?
+  slug              String?        @unique
+  content           String?
+  excerpt           String?
+  coverImage        String?
+  category          String?
+  tags              Json?          @default("[]")
+  authorName        String?
+  metaTitle         String?
+  metaDescription   String?
+  status            BlogPostStatus @default(DRAFT)
+  scheduledFor      DateTime?
+  publishedAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([scheduledFor])
+}
+
+// ============================================================================
+// MEDIA & ASSETS
+// ============================================================================
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  url       String
+  secureUrl String?
+  filename  String?
+  publicId  String?
+  mimeType  String?
+  size      Int?
+  width     Int?
+  height    Int?
+  alt       String?
+  folder    String?
+  variants  Json?    @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([folder])
+  @@index([publicId])
+}
+
+// ============================================================================
+// PUBLIC DATA
+// ============================================================================
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String?
+  order     Int      @default(0)
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model Statistic {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  suffix    String?
+  order     Int      @default(0)
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  title     String?
+  image     String?
+  imageUrl  String?
+  role      String?
+  bio       String?
+  linkedin  String?
+  order     Int      @default(0)
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+// ============================================================================
+// MISSING MODELS FROM CODE
+// ============================================================================
+
+model CaseStudy {
+  id          String   @id @default(cuid())
+  title       String?
+  slug        String?  @unique
+  content     String?
+  description String?
+  imageUrl    String?
+  results     String?
+  published   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model PortfolioItem {
+  id        String   @id @default(cuid())
+  title     String?
+  slug      String?  @unique
+  content   String?
+  imageUrl  String?
+  link      String?
+  published Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  author    String?
+  content   String?
+  rating    Int      @default(5)
+  platform  String?
+  published Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model TimelineEvent {
+  id        String   @id @default(cuid())
+  title     String?
+  content   String?
+  description String?
+  date      DateTime?
+  year      String?
+  published Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  author    String?
+  name      String?
+  role      String?
+  content   String?
+  company   String?
+  imageUrl  String?
+  published Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model PricingPlan {
+  id          String   @id @default(cuid())
+  name        String?
+  slug        String?  @unique
+  price       String?
+  description String?
+  period      String?
+  highlighted Boolean  @default(false)
+  features    Json?    @default("[]")
+  published   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([order])
+}
+
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  attempts  Int      @default(1)
+  count     Int      @default(0)
+  windowEnd DateTime?
+  resetAt   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([key])
+  @@index([resetAt])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  sessionId String?
+  event     String
+  eventType String?
+  path      String?
+  device    String?
+  browser   String?
+  referrer  String?
+  metadata  Json?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([event])
+  @@index([eventType])
+  @@index([path])
+  @@index([createdAt])
+}
